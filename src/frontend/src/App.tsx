@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Toaster } from "@/components/ui/sonner";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -8,6 +9,7 @@ import {
   Clock,
   Facebook,
   Instagram,
+  Mail,
   MapPin,
   Menu,
   MessageCircle,
@@ -67,26 +69,158 @@ const VALUES = [
   },
 ];
 
-const MENU_CATEGORIES = [
+type MenuItem = {
+  name: string;
+  desc?: string;
+  price: string;
+};
+
+type MenuCategory = {
+  id: string;
+  name: string;
+  emoji: string;
+  items: MenuItem[];
+};
+
+const MENU_DATA: MenuCategory[] = [
   {
-    emoji: "☕",
-    name: "Coffee & Espresso",
-    desc: "Rich single-origin espresso, velvety cappuccinos, creamy lattes and signature Meydani cold brews.",
+    id: "mains",
+    name: "Mains",
+    emoji: "🍛",
+    items: [
+      { name: "Butter Chicken", price: "" },
+      { name: "Mutton Korma", price: "₹399 / ₹699" },
+    ],
   },
   {
-    emoji: "🍵",
-    name: "Kashmiri Tea",
-    desc: "Authentic Noon Chai, fragrant Kahwa with saffron & cardamom, and warming Sheer Chai.",
+    id: "grill",
+    name: "Grill & Tandoori",
+    emoji: "🔥",
+    items: [
+      {
+        name: "Friends Platter",
+        desc: "2 Crispy Chicken, 2 Tandoori Chicken, 5 Meat Tikka, Rumali Roti, Fries",
+        price: "₹699",
+      },
+      {
+        name: "Turkish Family Platter",
+        desc: "Mandi, Alfaham Chicken full, 6 Alinazik, 2 Adana, 2 Neri, Inegol Kofta Kabab — served with salad, Rumali Roti & Fries",
+        price: "₹2000",
+      },
+      { name: "Malai Tikka", price: "₹399" },
+      { name: "Chicken Tikka", price: "₹399" },
+      { name: "Tandoori Chicken", price: "₹385 / ₹650" },
+      {
+        name: "Afghani Chicken",
+        desc: "Marinated with mouth-watering spices",
+        price: "₹385 / ₹650",
+      },
+      { name: "Mutton Kanti", price: "₹450" },
+      { name: "Chicken Kanti", price: "₹349" },
+      { name: "Kabab Kanti", price: "₹399" },
+    ],
   },
   {
-    emoji: "🥪",
-    name: "Food & Snacks",
-    desc: "Halal-certified sandwiches, paneer wraps, Kashmiri-spiced snacks and freshly baked breads.",
+    id: "chef",
+    name: "Chef's Selection",
+    emoji: "👨‍🍳",
+    items: [
+      {
+        name: "Turkish Shawarma",
+        desc: "With fries and cold drink",
+        price: "₹320",
+      },
+      { name: "Chicken Shawarma", price: "₹250" },
+      { name: "Turkish Mutton Keema", price: "₹299" },
+      { name: "Inegol Kofta Kabab", price: "₹500" },
+      { name: "Turkish Chicken", price: "₹499" },
+      { name: "Shish Tawouk (2 Skewers)", price: "₹350" },
+      { name: "Mutton Lamb Chops (4 pcs)", price: "₹600" },
+      { name: "Adana Kabab (4 pcs)", price: "₹499" },
+    ],
   },
   {
-    emoji: "🍮",
-    name: "Desserts",
-    desc: "Traditional Kashmiri sweets, indulgent pastries, seasonal fruit tarts and house-made kulfi.",
+    id: "arab",
+    name: "Arab Cuisine",
+    emoji: "🧆",
+    items: [
+      { name: "Channa Hamas", price: "₹200" },
+      { name: "Baba Ganoush", price: "₹240" },
+      { name: "Falafel", price: "₹200" },
+      { name: "Falafel Roll", price: "₹250" },
+      { name: "Chicken Khabsa", price: "₹440" },
+      { name: "Alfaham Chicken", price: "₹500" },
+      {
+        name: "Mandi Baan",
+        desc: "Order 24 hours prior",
+        price: "₹2500",
+      },
+      { name: "Arabic Raseela Chicken", price: "₹399" },
+    ],
+  },
+  {
+    id: "bites",
+    name: "Quick Bites",
+    emoji: "🥙",
+    items: [
+      {
+        name: "Chicken Shawarma",
+        desc: "Delicious soft chicken mixed with sauce, served with a side of fries",
+        price: "₹299",
+      },
+      {
+        name: "Chicken Kathi Rolls",
+        desc: "Chicken chunks marinated with house spices, served with fries",
+        price: "₹299",
+      },
+      {
+        name: "Paneer Roll",
+        desc: "Chunks of Kashmiri paneer marinated with spices, served with fries",
+        price: "₹249",
+      },
+      { name: "Chicken Sandwich", price: "₹249" },
+      { name: "Veg Sandwich", desc: "With fries", price: "₹149" },
+      { name: "Chicken Burger", desc: "With fries", price: "₹249" },
+      { name: "Lamb Burger", desc: "With fries", price: "₹299" },
+    ],
+  },
+  {
+    id: "pizza",
+    name: "Pizza",
+    emoji: "🍕",
+    items: [
+      { name: "Chicken Blast", price: "₹399 / ₹549" },
+      { name: "Meydani Special", price: "₹449 / ₹599" },
+      { name: "Mexican Style Pizza", price: "₹349 / ₹499" },
+      { name: "Kashmiri Kabab Pizza", price: "₹399 / ₹549" },
+      { name: "Veg Pizza", price: "₹349 / ₹449" },
+      { name: "Cheese Pizza", price: "₹299 / ₹349" },
+    ],
+  },
+  {
+    id: "rice",
+    name: "Rice",
+    emoji: "🍚",
+    items: [
+      { name: "Chicken Biryani", price: "₹399" },
+      { name: "Mutton Biryani", price: "₹699" },
+      { name: "Mutton Uzbeki Pulav", price: "₹399 / ₹700" },
+      { name: "Chicken Fried Rice", price: "₹349" },
+      { name: "Veg Schezwan Fried Rice", price: "₹299" },
+      { name: "Chicken Schezwan Fried Rice", price: "₹349" },
+      { name: "Veg Fried Rice", price: "₹249" },
+    ],
+  },
+  {
+    id: "roti",
+    name: "Roti & Bread",
+    emoji: "🫓",
+    items: [
+      { name: "Turkish Naan", price: "₹100" },
+      { name: "Arabic Keema Kulcha", price: "₹150" },
+      { name: "Rumali Roti", price: "₹49" },
+      { name: "Butter Naan / Garlic Naan", price: "₹99" },
+    ],
   },
 ];
 
@@ -94,33 +228,41 @@ const CONTACT_DETAILS = [
   {
     icon: MapPin,
     label: "Address",
-    value: "Near Polo View Market",
-    sub: "Srinagar, J&K 190001",
+    value: "The Bund Road, Residency Road",
+    sub: "near Chai Jai, Poloview, Srinagar, J&K 190001",
     href: "https://maps.google.com/?q=Meydani+Cafe+Srinagar",
     ocid: "location.address.button",
   },
   {
     icon: Phone,
     label: "Phone",
-    value: "+91 96227 89314",
+    value: "+91 88990 58697",
     sub: "Call us anytime",
-    href: "tel:+919622789314",
+    href: "tel:+918899058697",
     ocid: "location.phone.button",
+  },
+  {
+    icon: Mail,
+    label: "Email",
+    value: "meydanicatbund@gmail.com",
+    sub: "We'll reply as soon as possible",
+    href: "mailto:meydanicatbund@gmail.com",
+    ocid: "location.email.button",
   },
   {
     icon: Clock,
     label: "Hours",
-    value: "Mon–Sat 9AM–9PM",
-    sub: "Sun 10AM–8PM",
+    value: "Daily 10:30AM–9:00PM",
+    sub: "Open every day",
     href: "",
     ocid: "",
   },
   {
     icon: Instagram,
     label: "Instagram",
-    value: "@meydanicafe",
+    value: "@meydani_cafe1",
     sub: "Follow us for daily specials",
-    href: "https://instagram.com/meydanicafe",
+    href: "https://instagram.com/meydani_cafe1",
     ocid: "location.instagram.button",
   },
 ];
@@ -209,6 +351,148 @@ function ContactDetail({
   );
 }
 
+// ─── MenuSection ──────────────────────────────────────────────────────────────
+
+function MenuSection() {
+  const [activeTab, setActiveTab] = useState("all");
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  const visibleCategories =
+    activeTab === "all"
+      ? MENU_DATA
+      : MENU_DATA.filter((c) => c.id === activeTab);
+
+  return (
+    <section
+      id="menu"
+      className="py-24"
+      style={{
+        background: "linear-gradient(160deg, #2B1A12 0%, #3A241A 100%)",
+      }}
+    >
+      <div className="max-w-[1200px] mx-auto px-6">
+        {/* Heading */}
+        <div className="text-center mb-12">
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-cream-light relative inline-block">
+            Our Full Menu
+            <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-20 h-1 bg-caramel rounded-full" />
+          </h2>
+          <p className="mt-8 text-cream-light/55 max-w-xl mx-auto text-sm leading-relaxed">
+            From traditional Kashmiri flavours to international favourites —
+            every item is halal-certified and made fresh daily.
+          </p>
+        </div>
+
+        {/* Category Tabs — horizontally scrollable */}
+        <div
+          ref={tabsRef}
+          className="flex gap-2 overflow-x-auto pb-3 mb-10 scrollbar-hide"
+          data-ocid="menu.tab"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {/* All tab */}
+          <button
+            type="button"
+            onClick={() => setActiveTab("all")}
+            data-ocid="menu.tab"
+            className={`flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap border ${
+              activeTab === "all"
+                ? "bg-caramel text-espresso border-caramel shadow-warm"
+                : "bg-transparent text-cream-light/70 border-cream-light/20 hover:border-caramel/50 hover:text-cream-light"
+            }`}
+          >
+            🍽️ All
+          </button>
+          {MENU_DATA.map((cat) => (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => setActiveTab(cat.id)}
+              data-ocid="menu.tab"
+              className={`flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap border ${
+                activeTab === cat.id
+                  ? "bg-caramel text-espresso border-caramel shadow-warm"
+                  : "bg-transparent text-cream-light/70 border-cream-light/20 hover:border-caramel/50 hover:text-cream-light"
+              }`}
+            >
+              {cat.emoji} {cat.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Menu Items */}
+        <div className="space-y-12">
+          {visibleCategories.map((cat) => (
+            <div key={cat.id}>
+              {/* Category heading (shown for all-tab view) */}
+              {activeTab === "all" && (
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="text-3xl">{cat.emoji}</span>
+                  <h3 className="font-display text-xl font-bold text-caramel-light">
+                    {cat.name}
+                  </h3>
+                  <div className="flex-1 h-px bg-cream-light/10" />
+                </div>
+              )}
+              {activeTab !== "all" && (
+                <div className="flex items-center gap-3 mb-8">
+                  <span className="text-4xl">{cat.emoji}</span>
+                  <div>
+                    <h3 className="font-display text-2xl font-bold text-caramel-light">
+                      {cat.name}
+                    </h3>
+                    <p className="text-cream-light/45 text-xs">
+                      {cat.items.length} items
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Item grid */}
+              <div className="grid sm:grid-cols-2 gap-3">
+                {cat.items.map((item, idx) => (
+                  <div
+                    key={`${cat.id}-${idx}`}
+                    data-ocid={`menu.item.${idx + 1}`}
+                    className="flex items-start justify-between gap-4 rounded-2xl px-5 py-4 transition-all duration-200 hover:-translate-y-0.5"
+                    style={{
+                      background: "rgba(255,255,255,0.05)",
+                      border: "1px solid rgba(201,162,106,0.15)",
+                    }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-cream-light font-semibold text-sm leading-snug">
+                        {item.name}
+                      </p>
+                      {item.desc && (
+                        <p className="text-cream-light/45 text-xs leading-relaxed mt-1">
+                          {item.desc}
+                        </p>
+                      )}
+                    </div>
+                    {item.price && (
+                      <span className="flex-shrink-0 text-caramel font-bold text-sm pt-0.5">
+                        {item.price}
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Pizza note */}
+        {(activeTab === "all" || activeTab === "pizza") && (
+          <p className="text-center text-cream-light/35 text-xs mt-8">
+            * Pizza prices shown as Medium / Large
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}
+
 // ─── Main App ─────────────────────────────────────────────────────────────────
 
 export default function App() {
@@ -219,7 +503,6 @@ export default function App() {
   const [submitting, setSubmitting] = useState(false);
 
   const storyRef = useReveal();
-  const menuRef = useReveal();
   const locationRef = useReveal();
   const contactRef = useReveal();
 
@@ -414,7 +697,7 @@ export default function App() {
           <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
             <div className="rounded-3xl overflow-hidden shadow-lift">
               <img
-                src="/assets/generated/meydani-about.dim_900x600.jpg"
+                src="/assets/uploads/Screenshot-2026-03-18-125729-1.png"
                 alt="Meydani Cafe interior"
                 className="w-full h-80 object-cover hover:scale-105 transition-transform duration-700"
               />
@@ -424,10 +707,10 @@ export default function App() {
                 A Cafe Rooted in Kashmir
               </h3>
               <p className="text-espresso/65 leading-relaxed text-sm">
-                Nestled near Polo View Market in the heart of Srinagar, Meydani
-                Cafe was founded with a simple vision: to create a space where
-                the rich flavours and warm spirit of Kashmiri hospitality could
-                be shared with everyone.
+                Nestled on The Bund Road near Chai Jai, Poloview in Srinagar,
+                Meydani Cafe was founded with a simple vision: to create a space
+                where the rich flavours and warm spirit of Kashmiri hospitality
+                could be shared with everyone.
               </p>
               <p className="text-espresso/65 leading-relaxed text-sm">
                 Every item on our menu — from our hand-pulled Noon Chai to our
@@ -443,7 +726,7 @@ export default function App() {
                     Opening Hours
                   </p>
                   <p className="text-espresso font-semibold text-sm">
-                    Mon–Sat 9AM–9PM &nbsp;·&nbsp; Sun 10AM–8PM
+                    Daily 10:30 AM – 9:00 PM
                   </p>
                 </div>
               </div>
@@ -470,62 +753,8 @@ export default function App() {
         </div>
       </section>
 
-      {/* ── EXPLORE OUR MENU ────────────────────────────────────────────── */}
-      <section
-        id="menu"
-        ref={menuRef}
-        className="section-reveal py-24"
-        style={{
-          background: "linear-gradient(160deg, #2B1A12 0%, #3A241A 100%)",
-        }}
-      >
-        <div className="max-w-[1200px] mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-cream-light relative inline-block">
-              Explore Our Menu
-              <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-20 h-1 bg-caramel rounded-full" />
-            </h2>
-            <p className="mt-8 text-cream-light/55 max-w-xl mx-auto text-sm leading-relaxed">
-              From traditional Kashmiri brews to international café favourites —
-              every item is halal-certified and made fresh daily.
-            </p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {MENU_CATEGORIES.map((cat, i) => (
-              <div
-                key={cat.name}
-                data-ocid={`menu.item.${i + 1}`}
-                className="group bg-parchment rounded-3xl overflow-hidden shadow-card hover:shadow-lift hover:-translate-y-2 transition-all duration-300"
-              >
-                <div
-                  className="h-32 flex items-center justify-center text-6xl"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #F3EBDD 0%, #FFF8EE 100%)",
-                  }}
-                >
-                  {cat.emoji}
-                </div>
-                <div className="p-6">
-                  <h3 className="font-display text-lg font-bold text-espresso mb-2">
-                    {cat.name}
-                  </h3>
-                  <p className="text-espresso/60 text-xs leading-relaxed mb-4">
-                    {cat.desc}
-                  </p>
-                  <a
-                    href="#contact"
-                    data-ocid={`menu.view.button.${i + 1}`}
-                    className="text-caramel hover:text-caramel-dark font-semibold text-xs transition-colors inline-flex items-center gap-1 group-hover:gap-2"
-                  >
-                    View Items →
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ── FULL MENU ───────────────────────────────────────────────────── */}
+      <MenuSection />
 
       {/* ── FIND US IN SRINAGAR ─────────────────────────────────────────── */}
       <section
@@ -554,17 +783,16 @@ export default function App() {
               >
                 <MapPin className="w-12 h-12 text-caramel" strokeWidth={1.5} />
                 <p className="font-display text-xl font-bold text-espresso">
-                  Near Polo View Market
+                  The Bund Road, Residency Road
                 </p>
                 <p className="text-espresso/60 text-sm">
-                  Srinagar, J&amp;K 190001
+                  near Chai Jai, Poloview, Srinagar, J&amp;K 190001
                 </p>
               </div>
               <div className="p-6 flex flex-col gap-3">
                 <p className="text-espresso/70 text-sm">
-                  We're conveniently located near Polo View Market, one of
-                  Srinagar's most vibrant hubs — easy to find and easier to
-                  love.
+                  We're conveniently located on The Bund Road near Chai Jai,
+                  Poloview — easy to find and easier to love.
                 </p>
                 <a
                   href="https://maps.google.com/?q=Meydani+Cafe+Srinagar"
@@ -763,7 +991,7 @@ export default function App() {
                 {[
                   {
                     icon: Instagram,
-                    href: "https://instagram.com/meydanicafe",
+                    href: "https://instagram.com/meydani_cafe1",
                     label: "Instagram",
                     ocid: "footer.instagram.button",
                   },
@@ -775,9 +1003,15 @@ export default function App() {
                   },
                   {
                     icon: MessageCircle,
-                    href: "https://wa.me/919622789314",
+                    href: "https://wa.me/918899058697",
                     label: "WhatsApp",
                     ocid: "footer.whatsapp.button",
+                  },
+                  {
+                    icon: Mail,
+                    href: "mailto:meydanicatbund@gmail.com",
+                    label: "Email",
+                    ocid: "footer.email.button",
                   },
                 ].map(({ icon: Icon, href, label, ocid }) => (
                   <a
